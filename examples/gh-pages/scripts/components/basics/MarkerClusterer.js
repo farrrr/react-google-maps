@@ -20,22 +20,19 @@ export default class MarkerClustererExample extends Component {
       });
   }
 
-  handleBoundsChanged = () => {
-    if (!this.map) {
-      // Wait for map to load
+  handleBoundsChanged() {
+    const center = this.refs.map.getCenter();
+    const zoom = this.refs.map.getZoom();
+    const stateCenter = new google.maps.LatLng(this.state.lat, this.state.lng);
+
+    if (zoom === this.state.zoom && center.equals(stateCenter)) {
+      // Notice: Check equality here, or it will fire event infinitely
       return;
     }
 
-    const center = this.map.getCenter();
-    const zoom = this.map.getZoom();
-    const stateCenter = new google.maps.LatLng(this.state.lat, this.state.lng);
-
-    // Notice: Check equality here, or it will fire event infinitely
-    if (zoom !== this.state.zoom || !center.equals(stateCenter)) {
-      const lat = center.lat();
-      const lng = center.lng();
-      this.setState({ lat, lng, zoom });
-    }
+    const lat = center.lat();
+    const lng = center.lng();
+    this.setState({ lat, lng, zoom });
   }
 
   render() {
@@ -53,15 +50,10 @@ export default class MarkerClustererExample extends Component {
         }
         googleMapElement={
           <GoogleMap
-            containerProps={{
-              ...this.props,
-              style: {
-                height: '100%',
-              },
-            }}
-            onBoundsChanged={ this.handleBoundsChanged }
-            zoom={ zoom }
-            center={ ({ lat, lng }) }>
+            ref='map'
+            onBoundsChanged={ ::this.handleBoundsChanged }
+            defaultZoom={ zoom }
+            defaultCenter={ ({ lat, lng }) }>
             <MarkerClusterer
               averageCenter={ true }
               enableRetinaIcons={ true }
