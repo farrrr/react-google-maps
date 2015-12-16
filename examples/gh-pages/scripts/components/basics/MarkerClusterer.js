@@ -1,5 +1,6 @@
 import {default as React, Component} from 'react';
 import {default as fetch} from 'isomorphic-fetch';
+import {default as _} from 'lodash';
 
 import {GoogleMapLoader, GoogleMap, Marker, InfoWindow} from 'react-google-maps';
 import {default as MarkerClusterer} from 'react-google-maps/lib/addons/MarkerClusterer';
@@ -20,7 +21,7 @@ export default class MarkerClustererExample extends Component {
       });
   }
 
-  handleBoundsChanged() {
+  handleBoundsChanged = _.debounce(() => {
     const center = this.refs.map.getCenter();
     const zoom = this.refs.map.getZoom();
     const stateCenter = new google.maps.LatLng(this.state.lat, this.state.lng);
@@ -33,7 +34,7 @@ export default class MarkerClustererExample extends Component {
     const lat = center.lat();
     const lng = center.lng();
     this.setState({ lat, lng, zoom });
-  }
+  }, 1000)
 
   render() {
     const { markers, zoom, lat, lng } = this.state;
